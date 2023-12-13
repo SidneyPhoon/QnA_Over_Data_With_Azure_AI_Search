@@ -1,0 +1,45 @@
+id: bring_your_own_data_qna
+name: Bring Your Own Data QnA
+inputs:
+  question:
+    type: string
+    default: what are the permits required for temporary dinning area?
+    is_chat_input: false
+outputs:
+  output:
+    type: string
+    reference: ${generate_prompt_context.output}
+  context:
+    type: string
+    reference: ${generate_prompt_context.output}
+nodes:
+- name: Search
+  type: python
+  source:
+    type: code
+    path: Search.py
+  inputs:
+    search: cognitivesearch-std-eastus
+    question: ${inputs.question}
+    top_k: 3
+  use_variants: false
+- name: generate_prompt_context
+  type: python
+  source:
+    type: code
+    path: generate_prompt_context.py
+  inputs:
+    search_result: ${Search.output}
+  use_variants: false
+- name: prompt_variant
+  type: prompt
+  source:
+    type: code
+    path: prompt_variant.jinja2
+  inputs:
+    contexts: ${generate_prompt_context.output}
+    question: ${inputs.question}
+  use_variants: false
+node_variants: {}
+environment:
+  python_requirements_txt: requirements.txt

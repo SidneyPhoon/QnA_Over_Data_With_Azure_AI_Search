@@ -1,0 +1,65 @@
+id: bring_your_own_data_qna
+name: Bring Your Own Data QnA
+inputs:
+  question:
+    type: string
+    default: what are the permits required for temporary dinning area?
+    is_chat_input: false
+outputs:
+  output:
+    type: string
+    reference: ${generate_prompt_context.output}
+  context:
+    type: string
+    reference: ${generate_prompt_context.output}
+nodes:
+- name: Search
+  type: python
+  source:
+    type: code
+    path: Search.py
+  inputs:
+    search: cognitivesearch-std-eastus
+    question: ${inputs.question}
+    top_k: 2
+  use_variants: false
+- name: generate_prompt_context
+  type: python
+  source:
+    type: code
+    path: generate_prompt_context.py
+  inputs:
+    search_result: ${Search.output}
+  use_variants: false
+- name: prompt_variant
+  type: prompt
+  source:
+    type: code
+    path: prompt_variant.jinja2
+  inputs:
+    contexts: ${generate_prompt_context.output}
+    question: ${inputs.question}
+  use_variants: false
+- name: answer_the_question
+  type: llm
+  source:
+    type: code
+    path: answer_the_question.jinja2
+  inputs:
+    deployment_name: gpt-4
+    temperature: 0
+    top_p: 1
+    stop: ""
+    max_tokens: 100
+    presence_penalty: 0
+    frequency_penalty: 0
+    logit_bias: ""
+    prompt_text: ${prompt_variant.output}
+  provider: AzureOpenAI
+  connection: gpt-4
+  api: chat
+  module: promptflow.tools.aoai
+  use_variants: false
+node_variants: {}
+environment:
+  python_requirements_txt: requirements.txt

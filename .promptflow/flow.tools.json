@@ -1,0 +1,112 @@
+{
+  "package": {},
+  "code": {
+    "Search.py": {
+      "name": "Search.py",
+      "type": "python",
+      "inputs": {
+        "question": {
+          "type": [
+            "string"
+          ],
+          "allow_manual_entry": false,
+          "is_multi_select": false,
+          "input_type": "default",
+          "value": "${inputs.question}",
+          "id": "m6u3zmut"
+        },
+        "search": {
+          "type": [
+            "CognitiveSearchConnection"
+          ],
+          "allow_manual_entry": false,
+          "is_multi_select": false,
+          "input_type": "default",
+          "value": "cognitivesearch-std-eastus",
+          "id": "0dkzjqwd"
+        },
+        "top_k": {
+          "type": [
+            "int"
+          ],
+          "allow_manual_entry": false,
+          "is_multi_select": false,
+          "input_type": "default",
+          "value": "3"
+        }
+      },
+      "source": "Search.py",
+      "function": "vector_search",
+      "is_builtin": false,
+      "enable_kwargs": false,
+      "tool_state": "stable",
+      "toolId": "Search.py"
+    },
+    "generate_prompt_context.py": {
+      "name": "generate_prompt_context.py",
+      "type": "python",
+      "inputs": {
+        "search_result": {
+          "type": [
+            "object"
+          ],
+          "allow_manual_entry": false,
+          "is_multi_select": false,
+          "input_type": "default"
+        }
+      },
+      "source": "generate_prompt_context.py",
+      "function": "my_python_tool",
+      "is_builtin": false,
+      "enable_kwargs": false,
+      "tool_state": "stable",
+      "toolId": "generate_prompt_context.py"
+    },
+    "prompt_variant.jinja2": {
+      "name": "prompt_variant.jinja2",
+      "type": "prompt",
+      "inputs": {
+        "contexts": {
+          "type": [
+            "string"
+          ],
+          "allow_manual_entry": false,
+          "is_multi_select": false,
+          "input_type": "default"
+        },
+        "question": {
+          "type": [
+            "string"
+          ],
+          "allow_manual_entry": false,
+          "is_multi_select": false,
+          "input_type": "default"
+        }
+      },
+      "source": "prompt_variant.jinja2",
+      "is_builtin": false,
+      "enable_kwargs": false,
+      "tool_state": "stable",
+      "toolId": "prompt_variant.jinja2"
+    },
+    "answer_the_question.jinja2": {
+      "name": "answer_the_question.jinja2",
+      "type": "prompt",
+      "inputs": {
+        "prompt_text": {
+          "type": [
+            "string"
+          ],
+          "allow_manual_entry": false,
+          "is_multi_select": false,
+          "input_type": "default"
+        }
+      },
+      "source": "answer_the_question.jinja2",
+      "is_builtin": false,
+      "enable_kwargs": false,
+      "tool_state": "stable",
+      "toolId": "answer_the_question.jinja2"
+    }
+  }
+}

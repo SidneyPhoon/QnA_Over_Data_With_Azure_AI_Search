@@ -1,0 +1,75 @@
+inputs:
+  question:
+    type: string
+    default: what are the permits required for temporary dinning area?
+    is_chat_input: false
+outputs:
+  output:
+    type: string
+    reference: ${answer_the_question_with_context2.output}
+    evaluation_only: false
+    is_chat_output: false
+  context:
+    type: string
+    reference: ${answer_the_question_with_context2.output}
+    evaluation_only: false
+    is_chat_output: false
+nodes:
+- name: embed_the_question
+  type: python
+  source:
+    type: package
+    tool: promptflow.tools.embedding.embedding
+  inputs:
+    connection: "text-embedding-ada-002"
+    deployment_name: "text-embedding-ada-002"
+    input: "${inputs.question}"
+  aggregation: false
+- name: answer_the_question_with_context2
+  type: llm
+  source:
+    type: code
+    path: answer_the_question_with_context2.jinja2
+  inputs:
+    deployment_name: "gpt-4"
+    temperature: 0
+    top_p: 1
+    stop: ""
+    max_tokens: 200
+    presence_penalty: 0
+    frequency_penalty: 0
+    logit_bias: ""
+    prompt_text: "${Prompt_variants.output}"
+  api: chat
+  provider: AzureOpenAI
+  connection: gpt-4
+  module: promptflow.tools.aoai
+  aggregation: false
+- name: Search
+  type: python
+  source:
+    type: code
+    path: Search.py
+  inputs:
+    search: "cognitivesearch-std-eastus"
+    embedding: "${embed_the_question.output}"
+    question: "${inputs.question}"
+  aggregation: false
+- name: generate_context_from_search
+  type: python
+  source:
+    type: code
+    path: generate_context_from_search.py
+  inputs: {}
+  aggregation: false
+- name: Prompt_variants
+  type: prompt
+  source:
+    type: code
+    path: Prompt_variants_2.jinja2
+  inputs:
+    contexts: "${generate_context_from_search.output}"
+    question: "${inputs.question}"
+  aggregation: false
+environment:
+  python_requirements_txt: requirements.txt
